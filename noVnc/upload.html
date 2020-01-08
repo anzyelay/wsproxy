@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>固件升级</title>
+		<meta charset="utf-8">
+		<script src="core/jquery.js"></script>
+		<script type="text/javascript">
+			function updateProgress(evt) {
+				if (evt.lengthComputable) {
+					var progressl = document.getElementById("progressl");
+					progressl.value = evt.loaded;
+					if(evt.loaded===evt.total){
+						progressl.style="width:0";
+					}
+				}
+			}
+			function uploadFile() {
+				var limt=10*1024*1024;
+				var upload=document.getElementById('filetoup');
+				if(upload.value)
+				{
+					var file = upload.files[0];
+					if(file.size>limt)
+					{
+						alert("文件太大（请限制在10M字节以内）");
+						return false;
+					}
+					document.getElementById("progressl").max = file.size;
+					document.getElementById("progressl").style = "width:22%";
+				}
+				var formdata = new FormData(upload.form);
+				$.ajax({
+					url: "/upload",
+					type: "POST",
+					data: formdata,
+					processData: false,
+					contentType: false,
+					cache: false,
+					xhr: function() {
+						myXhr = $.ajaxSettings.xhr();
+						if(myXhr.upload){
+							myXhr.upload.addEventListener('progress',updateProgress, false); // for handling the progress of the upload
+						}
+						return myXhr;
+					},
+				}).done(function(data) {
+					var w = window.open();
+					var ndata = data.replace("history.back","window.close");
+					w.document.write(ndata);
+				});
+				return false;
+			}
+		</script>
+	</head>
+
+	<body>
+		<!-- <h1>Upload file using standard form upload</h1> -->
+		<!-- <form method="POST" action="/upload" enctype="multipart/form-data"> -->
+			<!-- <label>Select a file:</label><br> -->
+			<!-- <input type="file" name="file" /> -->
+			<!-- <input type="submit" value="固件升级" /> -->
+		<!-- </form> -->
+
+		<!-- <h1>Upload file using Ajax - that also gives progress report</h1> -->
+		<form method="post" id="filename" name="filename" onsubmit="return uploadFile();">
+			<label>Select a file:</label><br>
+			<input type="file" id="filetoup" name="file" required />
+			<input type="submit" value="固件升级" />
+			<Progress id="progressl" max=100 value=0 style="width:0%;"></Progress>
+		</form>
+	</body>
+</html>
