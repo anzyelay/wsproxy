@@ -1,5 +1,5 @@
 ## 项目简介
-此项目是由**[mongoose](https://www.cesanta.com)**修改而来,纯C代码，替代**[noVnc](https://novnc.com)**项目中的websockets proxy代理的python程序，
+此项目是由[mongoose](https://www.cesanta.com)修改而来,纯C代码，替代[noVnc](https://novnc.com)项目中的websockets proxy代理的python程序，
 整合了http服务器和websocket转vnc的代理服务
 
 ## 下载编译
