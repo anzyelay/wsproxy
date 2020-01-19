@@ -1604,7 +1604,7 @@ const UI = {
     updateDesktopName(e) {
         UI.desktopName = e.detail.name;
         // Display the desktop name in the document title
-        document.title = e.detail.name + " - noVNC";
+        document.title = "管理页面--烽云科技"
     },
 
     bell(e) {
