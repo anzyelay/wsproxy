@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     /* Parse command line arguments */
     int opt;
-    while ( (opt = getopt(argc, argv, "d:p:h")) != -1) {
+    while ( (opt = getopt(argc, argv, "d:p:hu:")) != -1) {
         switch (opt) {
         case 'd':
             s_http_server_opts.document_root = optarg;
