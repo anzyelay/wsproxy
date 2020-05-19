@@ -277,18 +277,18 @@
 				margin-top: 20px;
 			" onsubmit="return file_check()">
 			<input type="file" name="filename" class="file" id="filename" >
-			<input type="submit" class="btn" value="固件升级" >
+			<input type="submit" class="btn" value="上传固件" >
 			</form>	
 			<script type="text/javascript">
 				function file_check(){
-					var limt=10*1024*1024;
+					var limt=1*1024*1024;
 				　　var upload=document.getElementById('filename');
 					if(upload.value)
 					{
 						var file = upload.files[0];
 						if(file.size>limt)
 						{
-							alert("文件太大（请限制在10M字节以内）");
+							alert("文件太大（请限制在1M字节以内）");
 						}
 						else
 						{
@@ -301,6 +301,7 @@
 				　　return false;
 				}
 			</script>
+			<h2 ><a href="/run" style="position:absolute;right:0px;">...</a>
         </div>
     </div>
 

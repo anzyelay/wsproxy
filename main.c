@@ -144,9 +144,15 @@ int main(int argc, char *argv[]) {
         case 'p':
             sprintf(s_http_address, "0.0.0.0:%s", optarg);
             break;
-        case 'u':
+        case 'u':{
+            int len = strlen(optarg);
+            if(len>=sizeof(s_upload_root_dir))
+                break;
             sprintf(s_upload_root_dir, "%s", optarg);
+            if(s_upload_root_dir[len-1]!='/')
+                s_upload_root_dir[len]='/';
             break;
+        }
         case 'h':
             printf("%s [-d home dir | -p port | -u upload dir]\n",argv[0]);
             return;

@@ -8693,8 +8693,18 @@ void mg_file_upload_handler(struct mg_connection *nc, int ev, void *ev_data,
           (struct file_upload_state *) mp->user_data;
       if (fus == NULL) break;
       if (mp->status >= 0 && fus->fp != NULL) {
-          LOG(LL_DEBUG, ("%p Uploaded %s (%s), %d bytes", nc, mp->file_name,
+        LOG(LL_DEBUG, ("%p Uploaded %s (%s), %d bytes", nc, mp->file_name,
                        fus->lfn, (int) fus->num_recd));
+          mg_send_head(nc, 200, -1, "");
+          mg_printf_http_chunk(nc,
+                  "<html><head><meta charset=\"utf-8\"><\head>\n"
+                  "<script>"
+                  "alert(\"%s --> %s 传输成功\\n\(已传输大小: %d bytes\)\");"
+                  "history.back();"
+                  "</script>\n"
+                  "</html>\n"
+                  ,mp->file_name ,fus->lfn ,fus->num_recd);
+          mg_send_http_chunk(nc, "" , 0);
       } else {
         LOG(LL_ERROR, ("Failed to store %s (%s)", mp->file_name, fus->lfn));
         /*
@@ -8703,31 +8713,6 @@ void mg_file_upload_handler(struct mg_connection *nc, int ev, void *ev_data,
          */
       }
       if (fus->fp != NULL) fclose(fus->fp);
-
-      char cmd[255]={0};
-      sprintf(cmd, "gzip -t \"%s\"", fus->lfn);
-      if(!system(cmd)){
-          mg_send_head(nc, 200, -1, "");
-          mg_printf_http_chunk(nc,
-                  "<html><head><meta charset=\"utf-8\"><\head>\n"
-                  "<script>"
-                  "alert(\"%s 传输成功\(已传输大小: %d bytes\)\");"
-                  "history.back();"
-                  "</script>\n"
-                  "</html>\n"
-                  ,fus->lfn ,fus->num_recd);
-          mg_send_http_chunk(nc, "" , 0);
-      } else {
-          mg_send_head(nc, 200, -1, "");
-          mg_printf_http_chunk(nc,
-                  "<html><head><meta charset=\"utf-8\"><\head>\n"
-                  "<script>alert(\"传输完成，校验错误，请检查\");history.back();</script>\n"
-                  "</html>\n"
-                      );
-          mg_send_http_chunk(nc, "" , 0);
-          sprintf(cmd, "rm \"%s\"", fus->lfn);
-          system(cmd);
-      }
       MG_FREE(fus->lfn);
       MG_FREE(fus);
       mp->user_data = NULL;
