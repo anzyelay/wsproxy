@@ -16,6 +16,9 @@
  */
 
 #include "mongoose.h"
+#ifndef NOUSED
+#define NOUSED(xxx)     (void)(xxx);
+#endif
 
 static const char *s_vnc_address = "0.0.0.0:5900";// vnc port
 static char s_http_address[16] = "0.0.0.0:80";// http port and websockets port
@@ -25,10 +28,11 @@ static struct mg_serve_http_opts s_http_server_opts;
 struct mg_str upload_fname(struct mg_connection *nc, struct mg_str fname) {
     // Just return the same filename. Do not actually do this except in test!
     // fname is user-controlled and needs to be sanitized.
+    NOUSED(nc)
     char *tmpf;
     const char *realstr = fname.p + fname.len;
     while (realstr-- != fname.p) {
-        if(*realstr=='\\' || *realstr=='\/') break;
+        if(*realstr=='\\' || *realstr=='/') break;
     }
     realstr++;
     int len = strlen(realstr) + strlen(s_upload_root_dir) + 1;
@@ -60,6 +64,7 @@ static void unproxy(struct mg_connection *c) {
 }
 
 static void proxy_handler(struct mg_connection *c, int ev, void *ev_data) {
+    NOUSED(ev_data)
     if (ev == MG_EV_POLL) return;
     switch (ev) {
     case MG_EV_CLOSE: {
@@ -145,7 +150,7 @@ int main(int argc, char *argv[]) {
             sprintf(s_http_address, "0.0.0.0:%s", optarg);
             break;
         case 'u':{
-            int len = strlen(optarg);
+            unsigned int len = strlen(optarg);
             if(len>=sizeof(s_upload_root_dir))
                 break;
             sprintf(s_upload_root_dir, "%s", optarg);
@@ -155,7 +160,7 @@ int main(int argc, char *argv[]) {
         }
         case 'h':
             printf("%s [-d home dir | -p port | -u upload dir]\n",argv[0]);
-            return;
+            return 0;
         default:
             break;
         }

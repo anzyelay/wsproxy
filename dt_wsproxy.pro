@@ -12,5 +12,5 @@ SOURCES += \
 HEADERS += \ \
     mongoose.h
 
-target.path = /tmp
+target.path = /tmp/tmp
 INSTALLS += target

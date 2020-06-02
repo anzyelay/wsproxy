@@ -8697,9 +8697,9 @@ void mg_file_upload_handler(struct mg_connection *nc, int ev, void *ev_data,
                        fus->lfn, (int) fus->num_recd));
           mg_send_head(nc, 200, -1, "");
           mg_printf_http_chunk(nc,
-                  "<html><head><meta charset=\"utf-8\"><\head>\n"
+                  "<html><head><meta charset=\"utf-8\"></head>\n"
                   "<script>"
-                  "alert(\"%s --> %s 传输成功\\n\(已传输大小: %d bytes\)\");"
+                  "alert(\"%s --> %s 传输成功\\n(已传输大小: %d bytes)\");"
                   "history.back();"
                   "</script>\n"
                   "</html>\n"
