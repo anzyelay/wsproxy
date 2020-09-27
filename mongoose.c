@@ -8621,6 +8621,7 @@ void mg_file_upload_handler(struct mg_connection *nc, int ev, void *ev_data,
       }
       fus = (struct file_upload_state *) MG_CALLOC(1, sizeof(*fus));
       if (fus == NULL) {
+        MG_FREE(lfn.p);
         nc->flags |= MG_F_CLOSE_IMMEDIATELY;
         return;
       }
@@ -8630,6 +8631,21 @@ void mg_file_upload_handler(struct mg_connection *nc, int ev, void *ev_data,
       if (lfn.p != mp->file_name) MG_FREE((char *) lfn.p);
       LOG(LL_DEBUG,
           ("%p Receiving file %s -> %s", nc, mp->file_name, fus->lfn));
+      struct stat fst;
+      int ret = stat(fus->lfn, &fst);
+      if(ret == 0){
+          char *backup = MG_MALLOC(lfn.len + 8);
+          sprintf(backup, "%s.backup", fus->lfn);
+          ret = rename(fus->lfn, backup);
+          MG_FREE(backup);
+          if(ret==-1){
+            MG_FREE(fus->lfn);
+            MG_FREE(fus);
+            MG_FREE(lfn.p);
+            nc->flags |= MG_F_CLOSE_IMMEDIATELY;
+            return;
+          }
+      }
       fus->fp = mg_fopen(fus->lfn, "wb+");
       if (fus->fp == NULL) {
         mg_printf(nc,
@@ -8712,6 +8728,7 @@ void mg_file_upload_handler(struct mg_connection *nc, int ev, void *ev_data,
          * HTTP reply
          */
       }
+      fflush(fus->fp);
       if (fus->fp != NULL) fclose(fus->fp);
       MG_FREE(fus->lfn);
       MG_FREE(fus);
